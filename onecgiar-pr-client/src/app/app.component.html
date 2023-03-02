@@ -5,4 +5,4 @@
 <app-external-tools></app-external-tools>
 <app-test-environment-label *ngIf="!isProduction"></app-test-environment-label>
 <app-share-request-modal></app-share-request-modal>
-<app-module-selector></app-module-selector>
+<app-module-selector *ngIf="!this.AuthService.inLogin"></app-module-selector>
