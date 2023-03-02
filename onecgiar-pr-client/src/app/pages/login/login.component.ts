@@ -39,7 +39,7 @@ export class LoginComponent implements OnDestroy, OnInit {
         this.authService.localStorageUser = user;
         this.successLogin = true;
         setTimeout(() => {
-          this.router.navigate(['/']);
+          this.router.navigate(['/module-selector-page']);
         }, 1500);
       },
       err => {
