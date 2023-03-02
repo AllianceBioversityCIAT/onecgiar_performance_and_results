@@ -7,7 +7,18 @@
     </div>
   </div>
   <div class="information">
+    <div class="admin_module">
+      <a class="admin_module_btn" (click)="this.moduleSelectorSE.showSelector()">
+        Change module
+        <i class="material-icons-round">
+          navigate_next
+        </i>
+      </a>
+    </div>
     <div class="admin_module" *ngIf="this.api?.rolesSE?.isAdmin">
+
+
+
       <a class="admin_module_btn" routerLink="/admin-module/">
         Admin module
         <i class="material-icons-round">

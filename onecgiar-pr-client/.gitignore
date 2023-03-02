@@ -49,3 +49,5 @@ package-lock.json
 .angular
 
 /todo-list
+
+**/dist/**/*.js

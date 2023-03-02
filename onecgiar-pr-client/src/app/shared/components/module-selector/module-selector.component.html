@@ -1,0 +1,18 @@
+<div id="module_selector" class="module_selector" *ngIf="this.moduleSelectorSE.selectorIsVisible">
+    <div class="close_button" (click)="this.moduleSelectorSE.hideSelector()"><i class="material-icons-round">
+            close
+        </i></div>
+    <div class="container">
+        <div class="card">
+            <div class="card-title">Repoting tool</div>
+            <div class="card-description">Lorem, ipsum dolor.</div>
+            <button class="card-button" routerLink="/" (click)="this.moduleSelectorSE.hideSelector()">Open</button>
+        </div>
+        <div class="card">
+            <div class="card-title">Risk management</div>
+            <div class="card-description">Lorem ipsum dolor sit.</div>
+            <button class="card-button" routerLink="/risk-management"
+                (click)="this.moduleSelectorSE.hideSelector()">Open</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,84 @@
+.module_selector {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    z-index: 5;
+    transition: all ease-in-out .3s;
+    background-color: #f5f5f5;
+
+    .close_button {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 10px 20px;
+        border-radius: 100px;
+        background-color: var(--pr-color-primary);
+        cursor: pointer;
+
+        i {
+            color: white;
+            font-size: 1.3em;
+        }
+    }
+
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        padding: 20px;
+    }
+
+    .card {
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 4px;
+        margin: 10px;
+        padding: 20px;
+        text-align: center;
+        width: 300px;
+    }
+
+    .card-title {
+        color: #333333;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .card-description {
+        color: #666666;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .card-button {
+        background-color: var(--pr-color-primary);
+        border: none;
+        border-radius: 4px;
+        color: #ffffff;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 10px 20px;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .card-button:hover {
+        background-color: #1565c0;
+    }
+
+
+}
+
+.hide_selector {
+    left: 50vw;
+}
