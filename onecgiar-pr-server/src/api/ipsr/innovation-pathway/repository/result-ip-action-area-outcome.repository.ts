@@ -1,16 +1,116 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { HandlersError } from '../../../../shared/handlers/error.utils';
 import { ResultIpAAOutcome } from '../entities/result-ip-action-area-outcome.entity';
 import { env } from 'process';
+import {
+  ReplicableConfigInterface,
+  ReplicableInterface,
+} from '../../../../shared/globalInterfaces/replicable.interface';
 
 @Injectable()
-export class ResultIpAAOutcomeRepository extends Repository<ResultIpAAOutcome> {
+export class ResultIpAAOutcomeRepository
+  extends Repository<ResultIpAAOutcome>
+  implements ReplicableInterface<ResultIpAAOutcome>
+{
+  private readonly _logger: Logger = new Logger(
+    ResultIpAAOutcomeRepository.name,
+  );
+
   constructor(
     private dataSource: DataSource,
     private readonly _handlersError: HandlersError,
   ) {
     super(ResultIpAAOutcome, dataSource.createEntityManager());
+  }
+
+  async replicable(
+    config: ReplicableConfigInterface<ResultIpAAOutcome>,
+  ): Promise<ResultIpAAOutcome> {
+    let final_data: ResultIpAAOutcome = null;
+    try {
+      if (config.f?.custonFunction) {
+        const queryData = `
+        SELECT 
+        riacao.action_area_outcome_id
+        ,? as created_by
+        ,riacao.created_date
+        ,riacao.is_active
+        ,? as last_updated_by
+        ,riacao.last_updated_date
+        ,? as result_by_innovation_package_id
+         FROM result_ip_action_area_outcome riacao
+         WHERE riacao.result_ip_action_area_outcome_id  = ? and riacao.is_active  > 0;`;
+        const response = await (<Promise<ResultIpAAOutcome[]>>(
+          this.query(queryData, [
+            config.user.id,
+            config.user.id,
+            config.new_result_id,
+            config.old_result_id,
+          ])
+        ));
+        const response_edit = <ResultIpAAOutcome>(
+          config.f.custonFunction(response?.length ? response[0] : null)
+        );
+        final_data = await this.save(response_edit);
+      } else {
+        const queryData: string = `
+        insert into \`result_answers\` (
+          action_area_outcome_id
+          ,created_by
+          ,created_date
+          ,is_active
+          ,last_updated_by
+          ,last_updated_date
+          ,result_by_innovation_package_id
+          ) SELECT 
+          riacao.action_area_outcome_id
+          ,? as created_by
+          ,riacao.created_date
+          ,riacao.is_active
+          ,? as last_updated_by
+          ,riacao.last_updated_date
+          ,? as result_by_innovation_package_id
+           FROM result_ip_action_area_outcome riacao
+           WHERE riacao.result_ip_action_area_outcome_id  = ? and riacao.is_active  > 0;`;
+        const response = await (<Promise<{ insertId }>>(
+          this.query(queryData, [
+            config.user.id,
+            config.user.id,
+            config.new_result_id,
+            config.old_result_id,
+          ])
+        ));
+
+        const queryFind = `
+        SELECT 
+        riacao.action_area_outcome_id
+        ,riacao.created_by
+        ,riacao.created_date
+        ,riacao.is_active
+        ,riacao.last_updated_by
+        ,riacao.last_updated_date
+        ,riacao.result_by_innovation_package_id
+        ,riacao.result_ip_action_area_outcome_id
+         FROM result_ip_action_area_outcome riacao
+         WHERE riacao.result_ip_action_area_outcome_id  = ?;
+        `;
+        const temp = await (<Promise<ResultIpAAOutcome[]>>(
+          this.query(queryFind, [config.new_result_id])
+        ));
+        final_data = temp?.length ? temp[0] : null;
+      }
+    } catch (error) {
+      config.f?.errorFunction
+        ? config.f.errorFunction(error)
+        : this._logger.error(error);
+      final_data = null;
+    }
+
+    config.f?.completeFunction
+      ? config.f.completeFunction({ ...final_data })
+      : null;
+    return final_data;
   }
 
   async mapActionAreaOutcome(coreId: number, initId: number) {

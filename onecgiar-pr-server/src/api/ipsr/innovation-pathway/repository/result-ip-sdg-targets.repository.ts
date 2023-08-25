@@ -1,16 +1,122 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HandlersError } from 'src/shared/handlers/error.utils';
 import { DataSource, Repository } from 'typeorm';
 import { ResultIpSdgTargets } from '../entities/result-ip-sdg-targets.entity';
+import {
+  ReplicableConfigInterface,
+  ReplicableInterface,
+} from '../../../../shared/globalInterfaces/replicable.interface';
 const { env } = process;
 
 @Injectable()
-export class ResultIpSdgTargetRepository extends Repository<ResultIpSdgTargets> {
+export class ResultIpSdgTargetRepository
+  extends Repository<ResultIpSdgTargets>
+  implements ReplicableInterface<ResultIpSdgTargets>
+{
   constructor(
     private dataSource: DataSource,
     private readonly _handlersError: HandlersError,
   ) {
     super(ResultIpSdgTargets, dataSource.createEntityManager());
+  }
+
+  private readonly _logger: Logger = new Logger(
+    ResultIpSdgTargetRepository.name,
+  );
+
+  async replicable(
+    config: ReplicableConfigInterface<ResultIpSdgTargets>,
+  ): Promise<ResultIpSdgTargets> {
+    let final_data: ResultIpSdgTargets = null;
+    try {
+      if (config.f?.custonFunction) {
+        const queryData = `
+        SELECT 
+        rist.clarisa_sdg_target_id
+        ,rist.clarisa_sdg_usnd_code
+        ,? as created_by
+        ,rist.created_date
+        ,rist.is_active
+        ,? as last_updated_by
+        ,rist.last_updated_date
+        ,? as result_by_innovation_package_id
+         FROM result_ip_sdg_targets rist
+         WHERE rist.result_by_innovation_package_id = ? rist.is_active > 0`;
+        const response = await (<Promise<ResultIpSdgTargets[]>>(
+          this.query(queryData, [
+            config.user.id,
+            config.user.id,
+            config.new_result_id,
+            config.old_result_id,
+          ])
+        ));
+        const response_edit = <ResultIpSdgTargets>(
+          config.f.custonFunction(response?.length ? response[0] : null)
+        );
+        final_data = await this.save(response_edit);
+      } else {
+        const queryData: string = `
+        INSERT INTO result_ip_sdg_targets (
+          clarisa_sdg_target_id
+          ,clarisa_sdg_usnd_code
+          ,created_by
+          ,created_date
+          ,is_active
+          ,last_updated_by
+          ,last_updated_date
+          ,result_by_innovation_package_id
+          ,result_ip_sdg_target_id
+          )
+          SELECT 
+          rist.clarisa_sdg_target_id
+          ,rist.clarisa_sdg_usnd_code
+          ,? as created_by
+          ,rist.created_date
+          ,rist.is_active
+          ,? as last_updated_by
+          ,rist.last_updated_date
+          ,? as result_by_innovation_package_id
+           FROM result_ip_sdg_targets rist
+          WHERE rist.result_by_innovation_package_id = ? rist.is_active > 0`;
+        const response = await (<Promise<{ insertId }>>(
+          this.query(queryData, [
+            config.user.id,
+            config.user.id,
+            config.new_result_id,
+            config.old_result_id,
+          ])
+        ));
+
+        const queryFind = `
+        SELECT 
+        rist.clarisa_sdg_target_id
+        ,rist.clarisa_sdg_usnd_code
+        ,rist.created_by
+        ,rist.created_date
+        ,rist.is_active
+        ,rist.last_updated_by
+        ,rist.last_updated_date
+        ,rist.result_by_innovation_package_id
+        ,rist.result_ip_sdg_target_id
+         FROM result_ip_sdg_targets rist
+         WHERE rist.result_by_innovation_package_id = ?
+          `;
+        const temp = await (<Promise<ResultIpSdgTargets[]>>(
+          this.query(queryFind, [config.new_result_id])
+        ));
+        final_data = temp?.length ? temp[0] : null;
+      }
+    } catch (error) {
+      config.f?.errorFunction
+        ? config.f.errorFunction(error)
+        : this._logger.error(error);
+      final_data = null;
+    }
+
+    config.f?.completeFunction
+      ? config.f.completeFunction({ ...final_data })
+      : null;
+    return final_data;
   }
 
   async getSdgs(resultByInnovationPackageId: number) {
