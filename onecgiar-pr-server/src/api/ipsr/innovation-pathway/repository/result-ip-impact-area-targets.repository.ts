@@ -6,6 +6,7 @@ import {
   ReplicableConfigInterface,
   ReplicableInterface,
 } from '../../../../shared/globalInterfaces/replicable.interface';
+import { VERSIONING } from '../../../../shared/utils/versioning.utils';
 
 @Injectable()
 export class ResultIpImpactAreaRepository
@@ -37,9 +38,13 @@ export class ResultIpImpactAreaRepository
         ,riit.is_active
         ,? as last_updated_by
         ,riit.last_updated_date
-        ,? as result_by_innovation_package_id
+        ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_by_innovation_package_id
          FROM result_ip_impact_area_target riit
-         WHERE riit.result_by_innovation_package_id = ? and riit.is_active > 0`;
+         INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = riit.result_by_innovation_package_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND riit.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<ResultIpImpactArea[]>>(
           this.query(queryData, [
             config.user.id,
@@ -70,9 +75,13 @@ export class ResultIpImpactAreaRepository
           ,riit.is_active
           ,? as last_updated_by
           ,riit.last_updated_date
-          ,? as result_by_innovation_package_id
+          ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_by_innovation_package_id
            FROM result_ip_impact_area_target riit
-           WHERE riit.result_by_innovation_package_id = ? and riit.is_active > 0`;
+           INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = riit.result_by_innovation_package_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND riit.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<{ insertId }>>(
           this.query(queryData, [
             config.user.id,
@@ -93,7 +102,11 @@ export class ResultIpImpactAreaRepository
         ,riit.result_by_innovation_package_id
         ,riit.result_ip_eoi_outcome_id
          FROM result_ip_impact_area_target riit
-         WHERE riit.result_by_innovation_package_id = ?
+         INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = riit.result_by_innovation_package_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND riit.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;
           `;
         const temp = await (<Promise<ResultIpImpactArea[]>>(
           this.query(queryFind, [config.new_result_id])

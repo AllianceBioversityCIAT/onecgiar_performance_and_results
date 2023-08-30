@@ -11,5 +11,11 @@ export const VERSIONING = {
     WHERE r2.result_code = ${result_id}
       AND r2.status_id = 2
       and r2.is_active > 0)), ${result_id})`,
+    Get_r_ip_r_id: (): string => `select rbip2.result_by_innovation_package_id  
+    from result_by_innovation_package rbip2 
+    WHERE rbip2.is_active > 0 
+      AND rbip2.ipsr_role_id = 1 
+      AND rbip2.result_innovation_package_id = ? 
+    LIMIT 1`,
   },
 };

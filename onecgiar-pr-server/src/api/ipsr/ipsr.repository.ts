@@ -8,6 +8,7 @@ import {
   ReplicableConfigInterface,
   ReplicableInterface,
 } from '../../shared/globalInterfaces/replicable.interface';
+import { VERSIONING } from '../../shared/utils/versioning.utils';
 
 @Injectable()
 export class IpsrRepository
@@ -36,9 +37,13 @@ export class IpsrRepository
         ,rist.is_active
         ,? as last_updated_by
         ,rist.last_updated_date
-        ,? as result_by_innovation_package_id
+        ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_by_innovation_package_id
          FROM result_ip_sdg_targets rist
-         WHERE rist.result_by_innovation_package_id = ? rist.is_active > 0`;
+         INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = rist.result_by_innovation_package_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND rist.is_active > 0
+         	AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<Ipsr[]>>(
           this.query(queryData, [
             config.user.id,
@@ -72,9 +77,13 @@ export class IpsrRepository
           ,rist.is_active
           ,? as last_updated_by
           ,rist.last_updated_date
-          ,? as result_by_innovation_package_id
+          ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_by_innovation_package_id
            FROM result_ip_sdg_targets rist
-          WHERE rist.result_by_innovation_package_id = ? rist.is_active > 0`;
+           INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = rist.result_by_innovation_package_id  
+           AND rbip.is_active > 0
+          WHERE rbip.result_innovation_package_id = ? 
+          AND rist.is_active > 0
+          AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<{ insertId }>>(
           this.query(queryData, [
             config.user.id,
@@ -96,7 +105,11 @@ export class IpsrRepository
         ,rist.result_by_innovation_package_id
         ,rist.result_ip_sdg_target_id
          FROM result_ip_sdg_targets rist
-         WHERE rist.result_by_innovation_package_id = ?
+         INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = rist.result_by_innovation_package_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND rist.is_active > 0
+         	AND rbip.ipsr_role_id = 1;
           `;
         const temp = await (<Promise<Ipsr[]>>(
           this.query(queryFind, [config.new_result_id])

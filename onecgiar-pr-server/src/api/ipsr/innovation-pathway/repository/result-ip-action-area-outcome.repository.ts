@@ -7,6 +7,7 @@ import {
   ReplicableConfigInterface,
   ReplicableInterface,
 } from '../../../../shared/globalInterfaces/replicable.interface';
+import { VERSIONING } from '../../../../shared/utils/versioning.utils';
 
 @Injectable()
 export class ResultIpAAOutcomeRepository
@@ -38,9 +39,13 @@ export class ResultIpAAOutcomeRepository
         ,riacao.is_active
         ,? as last_updated_by
         ,riacao.last_updated_date
-        ,? as result_by_innovation_package_id
+        ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_by_innovation_package_id
          FROM result_ip_action_area_outcome riacao
-         WHERE riacao.result_ip_action_area_outcome_id  = ? and riacao.is_active  > 0;`;
+         INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = riacao.result_by_innovation_package_id 
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND riacao.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<ResultIpAAOutcome[]>>(
           this.query(queryData, [
             config.user.id,
@@ -70,9 +75,13 @@ export class ResultIpAAOutcomeRepository
           ,riacao.is_active
           ,? as last_updated_by
           ,riacao.last_updated_date
-          ,? as result_by_innovation_package_id
+          ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_by_innovation_package_id
            FROM result_ip_action_area_outcome riacao
-           WHERE riacao.result_ip_action_area_outcome_id  = ? and riacao.is_active  > 0;`;
+           INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = riacao.result_by_innovation_package_id 
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND riacao.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<{ insertId }>>(
           this.query(queryData, [
             config.user.id,
@@ -93,7 +102,11 @@ export class ResultIpAAOutcomeRepository
         ,riacao.result_by_innovation_package_id
         ,riacao.result_ip_action_area_outcome_id
          FROM result_ip_action_area_outcome riacao
-         WHERE riacao.result_ip_action_area_outcome_id  = ?;
+         INNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = riacao.result_by_innovation_package_id 
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND riacao.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;
         `;
         const temp = await (<Promise<ResultIpAAOutcome[]>>(
           this.query(queryFind, [config.new_result_id])

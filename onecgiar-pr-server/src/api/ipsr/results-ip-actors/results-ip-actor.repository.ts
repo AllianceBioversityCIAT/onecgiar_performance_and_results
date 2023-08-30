@@ -6,6 +6,7 @@ import {
   ReplicableConfigInterface,
   ReplicableInterface,
 } from '../../../shared/globalInterfaces/replicable.interface';
+import { VERSIONING } from '../../../shared/utils/versioning.utils';
 
 @Injectable()
 export class ResultsIpActorRepository
@@ -40,12 +41,16 @@ export class ResultsIpActorRepository
         ,rira.men
         ,rira.men_youth
         ,rira.other_actor_type
-        ,? as result_ip_result_id
+        ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_ip_result_id
         ,rira.sex_and_age_disaggregation
         ,rira.women
         ,rira.women_youth
          FROM result_ip_result_actors rira
-         WHERE rira.result_ip_result_id = ? and rira.is_active > 0 `;
+         NNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = rira.result_ip_result_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND rira.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<ResultsIpActor[]>>(
           this.query(queryData, [
             config.user.id,
@@ -89,12 +94,16 @@ export class ResultsIpActorRepository
           ,rira.men
           ,rira.men_youth
           ,rira.other_actor_type
-          ,? as result_ip_result_id
+          ,${VERSIONING.QUERY.Get_r_ip_r_id()} as result_ip_result_id
           ,rira.sex_and_age_disaggregation
           ,rira.women
           ,rira.women_youth
            FROM result_ip_result_actors rira
-           WHERE rira.result_ip_result_id = ? and rira.is_active > 0 `;
+           NNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = rira.result_ip_result_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND rira.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;`;
         const response = await (<Promise<{ insertId }>>(
           this.query(queryData, [
             config.user.id,
@@ -126,7 +135,11 @@ export class ResultsIpActorRepository
         ,ra.women
         ,ra.women_youth
          FROM result_actors ra
-         WHERE ra.result_id = ?
+         NNER JOIN result_by_innovation_package rbip ON rbip.result_by_innovation_package_id = rira.result_ip_result_id  
+         												AND rbip.is_active > 0
+         WHERE rbip.result_innovation_package_id = ? 
+         	AND rira.is_active  > 0
+         	AND rbip.ipsr_role_id = 1;
           `;
         const temp = await (<Promise<ResultsIpActor[]>>(
           this.query(queryFind, [config.new_result_id])
