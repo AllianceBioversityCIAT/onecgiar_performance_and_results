@@ -4,11 +4,11 @@ pipeline {
      tools {
         nodejs "Node 20"
     }
-    
+
     stages {
         stage('Cloning Git') {
             steps {
-                git branch: 'set-up-project', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
+                git branch: 'staging', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
             }
         }
 
