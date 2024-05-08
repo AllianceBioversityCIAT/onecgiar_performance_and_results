@@ -1,23 +1,40 @@
 pipeline {
     agent any
     
+     tools {
+        nodejs "Node 20"
+    }
+    
     stages {
-        stage('Build') {
+        stage('Cloning Git') {
             steps {
-                // Add your build steps here
+                git branch: 'set-up-project', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
             }
         }
-        
+
+        stage('Install dependencies') {
+            steps {
+                dir('clarisaintegration') {
+                    sh 'npm install'
+                }
+            }
+        }
+
         stage('Test') {
             steps {
-                // Add your test steps here
+                dir('clarisaintegration') {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('linting') {
+            steps {
+                dir('clarisaintegration') {
+                    sh 'npm run lint'
+                }
             }
         }
         
-        stage('Deploy') {
-            steps {
-                // Add your deployment steps here
-            }
-        }
     }
 }
