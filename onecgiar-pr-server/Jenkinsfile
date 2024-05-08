@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Cloning Git') {
             steps {
-                git branch: 'setup-jenkins', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
+                git branch: 'main', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
             }
         }
 
