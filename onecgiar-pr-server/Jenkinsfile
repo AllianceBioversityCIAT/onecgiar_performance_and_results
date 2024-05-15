@@ -1,20 +1,49 @@
 pipeline {
     agent any
-    
-     tools {
+
+    tools {
         nodejs "Node 20"
     }
 
     stages {
-        stage('Cloning Git') {
+        stage('Start') {
             steps {
-                git branch: 'main', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
+                slackSend (
+                    color: '#FFFF00',
+                    message: "Reporting PROD CI/CD started",
+                    channel: "#platform-notifications",
+                    tokenCredentialId: 'slack-token',
+                    botUser: true,
+                    attachments: [
+                        [
+                            title: "CI/CD Start Details",
+                            color: "#FFFF00",
+                            fields: [
+                                [title: "Stage", value: "Start", short: true],
+                                [title: "Job", value: "${env.JOB_NAME}", short: true],
+                                [title: "Build Number", value: "${env.BUILD_NUMBER}", short: true]
+                            ]
+                        ]
+                    ]
+                )
+            }
+        }
+
+        stage('Cloning Git') {
+            when {
+                anyOf {
+                    branch 'master'
+                    branch 'origin/master'
+                }
+            }
+            steps {
+                git branch: 'master', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
             }
         }
 
         stage('Install dependencies') {
             steps {
-                dir('clarisaintegration') {
+                dir('onecgiar-pr-server') {
                     sh 'npm install'
                 }
             }
@@ -22,19 +51,91 @@ pipeline {
 
         stage('Test') {
             steps {
-                dir('clarisaintegration') {
-                    sh 'npm test'
+                script {
+                    try {
+                        dir('onecgiar-pr-server') {
+                            sh 'npm test'
+                        }
+                    } catch (Exception e) {
+                        env.BUILD_EXCEPTION = "Stage: ${env.STAGE_NAME}, Error: ${e.message}"
+                        throw e // rethrow the exception to fail the build
+                    }
                 }
             }
         }
 
         stage('linting') {
             steps {
-                dir('clarisaintegration') {
-                    sh 'npm run lint'
+                script {
+                    try {
+                        dir('onecgiar-pr-server') {
+                            sh 'npm run lint'
+                        }
+                    } catch (Exception e) {
+                        env.BUILD_EXCEPTION = "Stage: ${env.STAGE_NAME}, Error: ${e.message}"
+                        throw e // rethrow the exception to fail the build
+                    }
                 }
             }
         }
-        
+
+        stage('Deploy') {
+            when {
+                expression {
+                    script {
+                        def gitHubToken = env.GITHUB_TOKEN
+                        def changeId = env.CHANGE_ID
+                        def repo = 'AllianceBioversityCIAT/onecgiar_pr'
+                        def url = "https://api.github.com/repos/${repo}/pulls/${changeId}"
+                        def pullRequest = sh(script: "curl -s -H 'Authorization: token ${gitHubToken}' ${url}", returnStdout: true).trim()
+                        def pullRequestJson = readJSON text: pullRequest
+                        return pullRequestJson.state == 'closed' && pullRequestJson.merged == true
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend (
+                color: '#00FF00',
+                message: "Reporting PROD CI/CD succeeded",
+                channel: "#platform-notifications",
+                tokenCredentialId: 'slack-token',
+                botUser: true,
+                attachments: [
+                    [
+                        title: "CI/CD Success Details",
+                        color: "#00FF00",
+                        fields: [
+                            [title: "Stage", value: "${env.STAGE_NAME}", short: true],
+                            [title: "Job", value: "${env.JOB_NAME}", short: true],
+                            [title: "Build Number", value: "${env.BUILD_NUMBER}", short: true]
+                        ]
+                    ]
+                ]
+            )
+        }
+        failure {
+            slackSend (
+                color: '#FF0000',
+                message: "Reporting PROD CI/CD failed: ${env.BUILD_EXCEPTION}",
+                channel: "#platform-notifications",
+                tokenCredentialId: 'slack-token',
+                botUser: true,
+                attachments: [
+                    [
+                        title: "Build Failure Details",
+                        color: "#FF0000",
+                        fields: [
+                            [title: "Stage", value: "${env.STAGE_NAME}", short: true],
+                            [title: "Job", value: "${env.JOB_NAME}", short: true],
+                            [title: "Build Number", value: "${env.BUILD_NUMBER}", short: true]
+                        ]
+                    ]
+                ]
+            )
+        }
     }
 }
