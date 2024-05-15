@@ -32,12 +32,12 @@ pipeline {
         stage('Cloning Git') {
             when {
                 anyOf {
-                    branch 'master'
-                    branch 'origin/master'
+                    branch 'setup-jenkins'
+                    branch 'origin/setup-jenkins'
                 }
             }
             steps {
-                git branch: 'master', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
+                git branch: 'setup-jenkins', url: 'https://github.com/AllianceBioversityCIAT/onecgiar_pr'
             }
         }
 
