@@ -3,7 +3,10 @@ import { DataSource } from 'typeorm';
 import { HandlersError } from '../../../../shared/handlers/error.utils';
 import { ResultAnswer } from '../entities/result-answers.entity';
 import { LogicalDelete } from '../../../../shared/globalInterfaces/delete.interface';
-import { ConfigCustomQueryInterface, ReplicableConfigInterface } from '../../../../shared/globalInterfaces/replicable.interface';
+import {
+  ConfigCustomQueryInterface,
+  ReplicableConfigInterface,
+} from '../../../../shared/globalInterfaces/replicable.interface';
 import { BaseRepository } from '../../../../shared/extendsGlobalDTO/base-repository';
 import { predeterminedDateValidation } from '../../../../shared/utils/versioning.utils';
 
@@ -26,7 +29,9 @@ export class ResultAnswerRepository
       findQuery: `
         SELECT
             is_active,
-            ${predeterminedDateValidation(config.predetermined_date)} AS created_date,
+            ${predeterminedDateValidation(
+              config.predetermined_date,
+            )} AS created_date,
             last_updated_date,
             ${config.user.id} AS created_by,
             ${config.user.id} AS last_updated_by,
@@ -55,7 +60,9 @@ export class ResultAnswerRepository
             )
         SELECT
             is_active,
-            ${predeterminedDateValidation(config.predetermined_date)} AS created_date,
+            ${predeterminedDateValidation(
+              config.predetermined_date,
+            )} AS created_date,
             last_updated_date,
             ${config.user.id} AS created_by,
             ${config.user.id} AS last_updated_by,
@@ -77,7 +84,7 @@ export class ResultAnswerRepository
         WHERE
             result_id = ${config.new_result_id};
       `,
-    }
+    };
   }
 
   fisicalDelete(resultId: number): Promise<any> {
