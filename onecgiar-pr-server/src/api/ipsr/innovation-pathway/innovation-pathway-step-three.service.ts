@@ -220,14 +220,6 @@ export class InnovationPathwayStepThreeService {
         };
       }
 
-      // if (rip.is_expert_workshop_organized === true && !lwl) {
-      //   return {
-      //     response: { valid: false },
-      //     message: 'The link workshop list is required',
-      //     status: HttpStatus.BAD_REQUEST,
-      //   };
-      // }
-
       if (!workShopEvidence) {
         await this._evidenceRepository.save({
           result_id: resultId,

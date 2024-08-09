@@ -98,8 +98,6 @@ export class ResultsService {
     private readonly _resultsKnowledgeProductKeywordRepository: ResultsKnowledgeProductKeywordRepository,
     private readonly _resultsKnowledgeProductMetadataRepository: ResultsKnowledgeProductMetadataRepository,
     private readonly _resultsKnowledgeProductFairScoreRepository: ResultsKnowledgeProductFairScoreRepository,
-    //private readonly _resultsImpactAreaIndicatorRepository: ResultsImpactAreaIndicatorRepository,
-    //private readonly _resultsImpactAreaTargetRepository: ResultsImpactAreaTargetRepository,
     private readonly _logRepository: LogRepository,
     private readonly _versioningService: VersioningService,
     private readonly _returnResponse: ReturnResponse,
@@ -1248,16 +1246,6 @@ export class ResultsService {
         await this._resultCountryRepository.getResultCountriesByResultId(
           resultId,
         );
-
-      const knowledgeProduct =
-        await this._resultKnowledgeProductRepository.findOneBy({
-          results_id: resultId,
-        });
-
-      if (knowledgeProduct) {
-        //contries = knowledgeProduct.cgspace_countries?.split('; ') ?? [];
-        //regions = knowledgeProduct.cgspace_regions?.split('; ') ?? [];
-      }
 
       let scope = 0;
       if (

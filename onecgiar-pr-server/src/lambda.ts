@@ -10,10 +10,12 @@ import express from 'express';
 //!INFO: this is the original code. remove the line above and uncomment this one to revert to the original code
 //const express = require('express');
 
-// NOTE: If you get ERR_CONTENT_DECODING_FAILED in your browser, this is likely
-// due to a compressed response (e.g. gzip) which has not been handled correctly
-// by aws-serverless-express and/or API Gateway. Add the necessary MIME types to
-// binaryMimeTypes below
+/*
+  NOTE: If you get ERR_CONTENT_DECODING_FAILED in your browser, this is likely
+  due to a compressed response (e.g. gzip) which has not been handled correctly
+  by aws-serverless-express and/or API Gateway. Add the necessary MIME types to
+  binaryMimeTypes below
+*/
 const binaryMimeTypes: string[] = [];
 
 let cachedServer: Server;

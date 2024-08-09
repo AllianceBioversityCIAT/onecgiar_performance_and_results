@@ -31,8 +31,6 @@ export class ResultsComplementaryInnovationsFunction extends BaseEntity {
   })
   complementary_innovation_function_id: number;
 
-  //
-
   @ManyToOne(() => ResultsComplementaryInnovation, (rci) => rci.functions)
   @JoinColumn({
     name: 'result_complementary_innovation_id',

@@ -207,7 +207,6 @@ export class InnovationPathwayStepFourService {
         user,
         saveStepFourDto,
       );
-      // const workshop = await this.saveWorkshop(result.id, user, saveStepFourDto, version);
       const initiativeInvestment = await this.saveInitiativeInvestment(
         result.id,
         user,
@@ -245,7 +244,6 @@ export class InnovationPathwayStepFourService {
         response: {
           pictures,
           materials,
-          // workshop,
           initiativeInvestment,
           billateralInvestment,
           partnertInvestment,

@@ -497,7 +497,6 @@ export class AdminPanelService implements OnModuleInit {
       }
 
       const kps = allKpsResponse.response as ResultsKnowledgeProduct[];
-      //kps = kps.filter((kp) => !kp.isJournalArticle);
 
       const initDate: Date = new Date();
       this._logger.debug(

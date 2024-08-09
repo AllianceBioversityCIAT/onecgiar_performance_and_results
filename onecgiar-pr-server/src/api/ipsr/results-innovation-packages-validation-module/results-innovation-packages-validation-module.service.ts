@@ -107,17 +107,4 @@ export class ResultsInnovationPackagesValidationModuleService {
       };
     }
   }
-
-  // async innovationPackageValidation(resultId: number) {
-  //   try {
-  //     const validation: GreenchecksResponse = await this.getGreenchecksByinnovationPackage(resultId);
-
-  //     return {
-  //       message: 'Sections have been successfully validated',
-  //       status: HttpStatus.OK,
-  //     };
-  //   } catch (error) {
-  //     return this._handlersError.returnErrorRes(error);
-  //   }
-  // }
 }

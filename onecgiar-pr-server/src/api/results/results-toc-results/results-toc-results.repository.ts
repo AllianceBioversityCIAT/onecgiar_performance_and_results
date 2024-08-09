@@ -775,7 +775,6 @@ export class ResultsTocResultRepository
       update results_toc_result  
       set is_active = 1,
         last_updated_date = NOW(),
-       /* planned_result = NULL, */
         last_updated_by = ?
       where results_id = ?
         and initiative_id in (${initiative.toString()});
