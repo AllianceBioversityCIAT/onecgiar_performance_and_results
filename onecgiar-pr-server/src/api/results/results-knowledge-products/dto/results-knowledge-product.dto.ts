@@ -14,12 +14,9 @@ export class ResultsKnowledgeProductDto {
   metadata: ResultsKnowledgeProductMetadataDto[];
   metadataCG: ResultsKnowledgeProductMetadataDto;
   metadataWOS: ResultsKnowledgeProductMetadataDto;
-  //TODO remove when mapping is done
-  //cgspace_regions: string;
   is_global_geoscope: boolean;
   cgspace_countries: string[];
   clarisa_regions: number[];
-  //clarisa_countries: number[];
   handle: string;
   authors: ResultsKnowledgeProductAuthorDto[];
   type: string;
@@ -32,10 +29,6 @@ export class ResultsKnowledgeProductDto {
   altmetric_image_url: string;
   altmetric_full_data: ResultsKnowledgeProductAltmetricDto;
   references_other_knowledge_products: any;
-  /*findable: number;
-  accessible: number;
-  interoperable: number;
-  reusable: number;*/
   fair_data: FullFairData;
   is_melia?: boolean;
   melia_previous_submitted?: boolean;

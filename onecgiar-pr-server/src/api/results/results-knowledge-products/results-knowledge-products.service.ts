@@ -1214,7 +1214,6 @@ export class ResultsKnowledgeProductsService {
 
     newResult.has_countries =
       (newResult.result_country_array ?? []).length != 0;
-    //newResult.has_regions = (newKnowledgeProduct.cgspace_regions??'').length != 0;
 
     if (resultsKnowledgeProductDto.is_global_geoscope) {
       newResult.geographic_scope_id = 1;
@@ -1351,7 +1350,6 @@ export class ResultsKnowledgeProductsService {
         await this._resultsKnowledgeProductRepository.findOne({
           where: {
             results_id: result.id,
-            //...this._resultsKnowledgeProductWhere,
           },
           relations: { result_object: { obj_version: true } },
         });
