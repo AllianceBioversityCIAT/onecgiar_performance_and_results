@@ -570,9 +570,9 @@ export class ResultsTocResultsService {
           AND rtr.is_active = TRUE
       `);
       if (result.length != 0) {
-        (isSdg = result[0].isSdg),
-          (isImpactArea = result[0].isImpactArea),
-          (is_sdg_action_impact = result[0].is_sdg_action_impact);
+        isSdg = result[0].isSdg;
+        isImpactArea = result[0].isImpactArea;
+        is_sdg_action_impact = result[0].is_sdg_action_impact;
       } else {
         is_sdg_action_impact = false;
       }
@@ -673,7 +673,7 @@ export class ResultsTocResultsService {
       if (resultinit.toc_id) {
         const vesion_id = await this._resultsTocResultRepository.query(
           `SELECT
-            DISTINCT tr.phase
+            DISTINCT tr.version_id
           FROM
             Integration_information.toc_results tr
           WHERE
@@ -694,7 +694,7 @@ export class ResultsTocResultsService {
         if (!vesion_id.length || vesion_id[0].phase == null) {
           version_id = resultinit.toc_id;
         } else {
-          version_id = vesion_id[0].phase;
+          version_id = vesion_id[0].version_id;
         }
       }
       return {

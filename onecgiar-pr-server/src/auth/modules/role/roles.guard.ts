@@ -21,7 +21,7 @@ export class RolesGuard implements CanActivate {
 
     try {
       return true;
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }

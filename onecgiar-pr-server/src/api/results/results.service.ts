@@ -252,7 +252,7 @@ export class ResultsService {
             );
 
           await this._elasticService.sendBulkOperationToElastic(elasticJson);
-        } catch (error) {
+        } catch (_error) {
           this._logger.warn(
             `the elastic upload failed for the result #${newResultHeader.id}`,
           );
@@ -584,7 +584,7 @@ export class ResultsService {
             );
 
           await this._elasticService.sendBulkOperationToElastic(elasticJson);
-        } catch (error) {
+        } catch (_error) {
           this._logger.warn(
             `the elastic update failed for the result #${updateResult.id}`,
           );
@@ -785,7 +785,7 @@ export class ResultsService {
             class: ResultsService.name,
             method: `deleteResult`,
           });
-        } catch (error) {
+        } catch (_error) {
           this._logger.warn(
             `the elastic removal failed for the result #${result.id}`,
           );
@@ -1098,7 +1098,7 @@ export class ResultsService {
             );
 
           await this._elasticService.sendBulkOperationToElastic(elasticJson);
-        } catch (error) {
+        } catch (_error) {
           this._logger.warn(
             `the elastic update failed for the result #${legacyResult.legacy_id}`,
           );
@@ -1211,7 +1211,7 @@ export class ResultsService {
             );
 
           await this._elasticService.sendBulkOperationToElastic(elasticJson);
-        } catch (error) {
+        } catch (_error) {
           this._logger.warn(
             `the elastic update of the geoscope failed for the result #${createResultGeo.result_id}`,
           );
@@ -1267,8 +1267,8 @@ export class ResultsService {
           regions: regions,
           countries,
           geo_scope_id: scope,
-          has_countries: result?.has_countries ? true : false ?? null,
-          has_regions: result?.has_regions ? true : false ?? null,
+          has_countries: result?.has_countries ? true : (false ?? null),
+          has_regions: result?.has_regions ? true : (false ?? null),
         },
         message: 'Successful response',
         status: HttpStatus.OK,
